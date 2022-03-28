@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*
 r"""
+灵感来源于https://aerfaying.com/Projects/512945
+同时借鉴了它
 analyze函数需要传入一个参数，是json文件，但要转换成字符串。可以将sb3文件转换成analyze参数输入的字符串的函数式unzip。详见DEMO.py
 若无DEMO.py，见以下代码：
 import scratch_3_file_analyser
@@ -143,5 +145,5 @@ def analyze(file: str):
             except Exception:
                 import traceback
                 traceback.print_exc()
-    r.append(blocks); r.append('useful_blocks 由于各种问题，测出来不准，且暂时没有精力，暂时不提供'); r.append(motion_blocks); r.append(looks_blocks); r.append(sound_blocks); r.append(event_blocks); r.append(control_blocks); r.append(sensing_blocks); r.append(operator_blocks); r.append(data_blocks); r.append(procedures_blocks); r.append(other_blocks); r.append(cap_blocks); r.append(useful_cap_blocks)
+    r.append(blocks); r.append(None); r.append(motion_blocks); r.append(looks_blocks); r.append(sound_blocks); r.append(event_blocks); r.append(control_blocks); r.append(sensing_blocks); r.append(operator_blocks); r.append(data_blocks); r.append(procedures_blocks); r.append(other_blocks); r.append(cap_blocks); r.append(useful_cap_blocks)
     return r
