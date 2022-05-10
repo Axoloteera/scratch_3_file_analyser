@@ -8,7 +8,7 @@ import scratch_3_file_analyser
 print(scratch_3_file_analyser.analyze(scratch_3_file_analyser.unzip('./DEMO.sb3')))
 """
 
-author = ['吃书的熊（Gtd）']
+author = ['Gtd232']
 __version__ = '1.0.0'
 
 
