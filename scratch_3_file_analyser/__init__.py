@@ -39,22 +39,23 @@ def analyze(file: str):
     from json import loads
     d = loads(file)
     r = [len(d["targets"])]
-    sprite_name = []
-    for i in d["targets"]:
-        sprite_name.append(i["name"])
+    sprite_name = [i["name"] for i in d["targets"]]
     r.append(sprite_name)  # 添加所有精灵的名称
 
     variable_name = []
     for i in range(len(d["targets"])):  # ["variables"].keys():
-        for i2 in d["targets"][i]["variables"].keys():
-            variable_name.append(d["targets"][i]["variables"][i2][0])
-
+        variable_name.extend(
+            d["targets"][i]["variables"][i2][0]
+            for i2 in d["targets"][i]["variables"].keys()
+        )
     r.append(variable_name)
 
     list_name = []
     for i in range(len(d["targets"])):  # ["variables"].keys():
-            for i2 in d["targets"][i]["lists"].keys():
-                list_name.append(d["targets"][i]["lists"][i2][0])
+        list_name.extend(
+            d["targets"][i]["lists"][i2][0]
+            for i2 in d["targets"][i]["lists"].keys()
+        )
     r.append(list_name)
 
     costumes = 0
@@ -62,9 +63,7 @@ def analyze(file: str):
     for i in range(len(d["targets"])):  # ["variables"].keys():
         costumes += len(d["targets"][i]["costumes"])
         sounds += len(d["targets"][i]["sounds"])
-    r.append(costumes)
-    r.append(sounds)
-
+    r.extend((costumes, sounds))
     blocks = 0
     motion_blocks = 0
     looks_blocks = 0
@@ -83,7 +82,7 @@ def analyze(file: str):
         for i1 in d["targets"][i]["blocks"]:
             try:
                 opcode = d["targets"][i]["blocks"][i1]["opcode"]
-                if not 'menu' in opcode and not 'argument' in opcode:
+                if 'menu' not in opcode and 'argument' not in opcode:
                     blocks += 1
                     if 'motion' in opcode:
                         motion_blocks += 1
@@ -109,13 +108,11 @@ def analyze(file: str):
                         '''
                         useful_blocks += 1
                         '''
-                    elif opcode == 'procedures_prototype':
-                        pass
-                    else:
+                    elif opcode != 'procedures_prototype':
                         other_blocks += 1
                     if 'control_start_as_clone' in opcode or 'when' in opcode:
                         cap_blocks += 1
-                        if not d["targets"][i]["blocks"][i1]["next"] is None:
+                        if d["targets"][i]["blocks"][i1]["next"] is not None:
                             useful_cap_blocks += 1
                     # useful_blocks 由于各种问题，测出来不准，且暂时没有精力，暂时不提供
                     '''
@@ -127,14 +124,12 @@ def analyze(file: str):
                             useful_blocks += 1
                     '''
                 elif 'argument' in opcode: # TODO:简化代码
-                    if d["targets"][i]["blocks"][d["targets"][i]["blocks"][i1]["parent"]]["opcode"] is not None:
-                        if d["targets"][i]["blocks"][d["targets"][i]["blocks"][i1]["parent"]]["opcode"] != 'procedures_prototype':
-                            blocks += 1
-                            # useful_blocks 由于各种问题，测出来不准，且暂时没有精力，暂时不提供
-                            '''
-                            useful_blocks += 1
-                            '''
-                    elif d["targets"][i]["blocks"][d["targets"][i]["blocks"][i1]["parent"]]["opcode"] is None:
+                    if (
+                        d["targets"][i]["blocks"][
+                            d["targets"][i]["blocks"][i1]["parent"]
+                        ]["opcode"]
+                        is None
+                    ):
                         blocks += 1
 
 
@@ -142,8 +137,31 @@ def analyze(file: str):
 
 
 
+                    elif d["targets"][i]["blocks"][d["targets"][i]["blocks"][i1]["parent"]]["opcode"] != 'procedures_prototype':
+                        blocks += 1
+                        # useful_blocks 由于各种问题，测出来不准，且暂时没有精力，暂时不提供
+                        '''
+                            useful_blocks += 1
+                            '''
             except Exception:
                 import traceback
                 traceback.print_exc()
-    r.append(blocks); r.append(None); r.append(motion_blocks); r.append(looks_blocks); r.append(sound_blocks); r.append(event_blocks); r.append(control_blocks); r.append(sensing_blocks); r.append(operator_blocks); r.append(data_blocks); r.append(procedures_blocks); r.append(other_blocks); r.append(cap_blocks); r.append(useful_cap_blocks)
+    r.extend(
+        (
+            blocks,
+            None,
+            motion_blocks,
+            looks_blocks,
+            sound_blocks,
+            event_blocks,
+            control_blocks,
+            sensing_blocks,
+            operator_blocks,
+            data_blocks,
+            procedures_blocks,
+            other_blocks,
+            cap_blocks,
+            useful_cap_blocks,
+        )
+    )
     return r
